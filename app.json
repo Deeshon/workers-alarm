@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "AlarmApp",
+    "slug": "AlarmApp",
+    "scheme": "alarmApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "expo-notifications": {
+      "icon": "./assets/images/favicon.png",
+      "color": "#ffffff",
+      "sounds": ["./local/assets/sounds/mixkit-confirmation-tone-2867.wav"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/assets/images/favicon.png",
+          "color": "#ffffff",
+          "sounds": ["./local/assets/sounds/mixkit-confirmation-tone-2867.wav"],
+          "mode": "production"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
