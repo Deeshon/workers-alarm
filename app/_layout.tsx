@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Switch, Pressable } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, StyleSheet, Switch, Pressable, LogBox } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,17 +7,36 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AlarmCalender from "@/components/AlarmCalender";
 import Alarms from "@/components/Alarms";
+import * as Notifications from 'expo-notifications';
+
 
 type TypeAlarm = {
+  id: number;
   date: string;
   time: string;
+  enabled: boolean
 };
+
+
+LogBox.ignoreLogs(["new NativeEventEmitter"])
+LogBox.ignoreAllLogs();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false
+  })
+})
 
 const App = () => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [showTime, setShowTime] = useState(false);
   const [alarm, setAlarm] = useState<TypeAlarm[]>([]);
+
+  const notificationListener = useRef<any>();
+  const [notification, setNotification] = useState<any>(false);
 
   useEffect(() => {
     const loadAlarms = async () => {
@@ -35,6 +54,22 @@ const App = () => {
     loadAlarms();
   }, []);
 
+  const scheduleNotificationsHandler = async (alarm: TypeAlarm) => {
+    console.log('notification handler',alarm)
+    const currDate = new Date();
+    currDate.setSeconds(currDate.getSeconds() + 10);
+    const identifier = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Alarm",
+        body: "It is time to wake up!",
+        data: { data: "Your morning alarm data" },
+      },
+      trigger: {
+        date: currDate
+      }
+    })
+  }
+
   const handleTimeChange = (event: any, selectedTime: Date) => {
     setShowTime(false);
     if (selectedTime) {
@@ -45,8 +80,10 @@ const App = () => {
       setAlarm([
         ...alarm,
         {
+          id: alarm.length + 1,
           date: date,
           time: `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`,
+          enabled: false
         },
       ]);
     }
@@ -62,7 +99,7 @@ const App = () => {
   return (
     <SafeAreaView style={[styles.container]}>
       <View style={{ padding: 10 }}>
-        <Alarms alarm={alarm} setAlarm={setAlarm} />
+        <Alarms alarm={alarm} setAlarm={setAlarm} scheduleNotificationsHandler={scheduleNotificationsHandler} />
         <AlarmCalender
           date={date}
           handleTimeChange={handleTimeChange}
