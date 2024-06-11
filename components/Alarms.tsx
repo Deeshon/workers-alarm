@@ -3,14 +3,30 @@ import { View, Text, Switch, Pressable } from "react-native";
 
 
 type TypeAlarm = {
+    id: number;
     date: string;
     time: string;
+    enabled: boolean;
   };
 
-export default function Alarms({alarm, setAlarm}: {alarm: TypeAlarm[], setAlarm: any}) {
+export default function Alarms({alarm, setAlarm, scheduleNotificationsHandler}: {alarm: TypeAlarm[], setAlarm: any, scheduleNotificationsHandler: (alarm: TypeAlarm) => Promise<void>}) {
 
     const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(!isEnabled);
+    const toggleSwitch = (id: number) => {
+      const updatedAlarm = alarm.map((al) => {
+        if (al.id === id) {
+          return {
+            ...al,
+            enabled: !al.enabled
+          };
+        }
+        return al;
+      });
+
+      setAlarm(updatedAlarm)
+      const selectedAlarm = updatedAlarm.find((al) => al.id === id);
+      scheduleNotificationsHandler(selectedAlarm as TypeAlarm)
+    };
   
 
 return (
@@ -24,6 +40,7 @@ return (
       alarm.map((al) => {
         return (
           <View
+            key={al.id}
             style={{
               backgroundColor: "#1e1e1e",
               margin: 10,
@@ -64,8 +81,8 @@ return (
                 trackColor={{ false: "black", true: "#d2e3fc" }}
                 thumbColor={isEnabled ? "#1973e8" : "#5f6368"}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => toggleSwitch(al.id)}
+                value={al.enabled}
               />
               {/* <Icon name="more-vert" color={'white'} /> */}
               <Pressable
