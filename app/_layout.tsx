@@ -1,33 +1,39 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Switch, Pressable, LogBox } from "react-native";
-import { Calendar, LocaleConfig } from "react-native-calendars";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  LogBox,
+  Modal,
+  Alert,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Icon } from "react-native-elements";
+import { Button } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AlarmCalender from "@/components/AlarmCalender";
 import Alarms from "@/components/Alarms";
-import * as Notifications from 'expo-notifications';
-
+import * as Notifications from "expo-notifications";
+import CalenderView from "@/components/CalenderView";
 
 type TypeAlarm = {
   id: number;
   date: string;
   time: string;
-  enabled: boolean
+  enabled: boolean;
 };
 
-
-LogBox.ignoreLogs(["new NativeEventEmitter"])
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
 LogBox.ignoreAllLogs();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false
-  })
-})
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const App = () => {
   const [date, setDate] = useState("");
@@ -55,7 +61,7 @@ const App = () => {
   }, []);
 
   const scheduleNotificationsHandler = async (alarm: TypeAlarm) => {
-    console.log('notification handler',alarm)
+    console.log("notification handler", alarm);
     const currDate = new Date();
     currDate.setSeconds(currDate.getSeconds() + 10);
     const identifier = await Notifications.scheduleNotificationAsync({
@@ -63,16 +69,19 @@ const App = () => {
         title: "Alarm",
         body: "It is time to wake up!",
         data: { data: "Your morning alarm data" },
+        sound: "notification1.wav",
+        vibrate: [255, 0, 0],
       },
       trigger: {
-        date: currDate
-      }
-    })
-  }
+        date: currDate,
+      },
+    });
+  };
 
   const handleTimeChange = (event: any, selectedTime: Date) => {
     setShowTime(false);
     if (selectedTime) {
+      console.log('selectedTime', selectedTime.toUTCString())
       const currentTime = selectedTime || new Date();
       const hours = currentTime.getHours();
       const minutes = currentTime.getMinutes();
@@ -83,7 +92,7 @@ const App = () => {
           id: alarm.length + 1,
           date: date,
           time: `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`,
-          enabled: false
+          enabled: false,
         },
       ]);
     }
@@ -93,21 +102,59 @@ const App = () => {
     AsyncStorage.setItem("alarms", JSON.stringify(alarm));
   }, [alarm]);
 
-
   console.log(alarm);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tab, setTab] = useState(2);
+
   return (
-    <SafeAreaView style={[styles.container]}>
-      <View style={{ padding: 10 }}>
-        <Alarms alarm={alarm} setAlarm={setAlarm} scheduleNotificationsHandler={scheduleNotificationsHandler} />
-        <AlarmCalender
-          date={date}
-          handleTimeChange={handleTimeChange}
-          setDate={setDate}
-          setShowTime={setShowTime}
-          showTime={showTime}
-        />
-      </View>
+    <SafeAreaView style={styles.container}>
+      {tab === 1 && (
+        <SafeAreaView style={styles.container}>
+          <View style={{ flex: 1, padding: 10 }}>
+            <Alarms
+              alarm={alarm}
+              setAlarm={setAlarm}
+              scheduleNotificationsHandler={scheduleNotificationsHandler}
+            />
+
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                <View style={styles.centeredView}>
+                  <TouchableWithoutFeedback>
+                    <View style={styles.modalView}>
+                      <AlarmCalender
+                        date={date}
+                        handleTimeChange={handleTimeChange}
+                        setDate={setDate}
+                        setShowTime={setShowTime}
+                        showTime={showTime}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          </View>
+
+          <View style={{ marginTop: 50, padding: 50 }}>
+            <Button onPress={() => setModalVisible(true)} title="Add alarm" />
+          </View> 
+        </SafeAreaView>
+      )}
+      {tab === 2 && (
+        <SafeAreaView style={styles.container}>
+          <CalenderView alarms={alarm} />
+        </SafeAreaView>
+      )}
     </SafeAreaView>
   );
 };
@@ -125,16 +172,48 @@ const styles = StyleSheet.create({
   textColor: {
     color: "white",
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "#121212",
+    borderRadius: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonNew: {
+    borderRadius: 5,
+    padding: 10,
+    elevation: 2,
+    margin: 10,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
 });
 
 export default App;
-
-// import { Stack } from 'expo-router/stack';
-
-// export default function Layout() {
-//   return (
-//     <Stack>
-//       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-//     </Stack>
-//   );
-// }

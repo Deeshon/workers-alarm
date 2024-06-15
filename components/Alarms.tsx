@@ -40,7 +40,7 @@ return (
       alarm.map((al) => {
         return (
           <View
-            key={al.id}
+            key={al.time}
             style={{
               backgroundColor: "#1e1e1e",
               margin: 10,

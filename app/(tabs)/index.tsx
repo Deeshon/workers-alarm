@@ -1,99 +1,70 @@
-import React, { useState } from "react";
-import { View, Text, Switch, Pressable } from "react-native";
+import { Image, StyleSheet, Platform } from 'react-native';
 
+import { HelloWave } from '@/components/HelloWave';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 
-type TypeAlarm = {
-    date: string;
-    time: string;
-  };
-
-export default function Alarms({alarm, setAlarm}: {alarm: TypeAlarm[], setAlarm: any}) {
-
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(!isEnabled);
-  
-
-return (
-    <View
-    style={{
-      padding: 10,
-      justifyContent: "space-between",
-    }}
-  >
-    {alarm.length > 0 &&
-      alarm.map((al) => {
-        return (
-          <View
-            style={{
-              backgroundColor: "#1e1e1e",
-              margin: 10,
-              flexDirection: "row",
-              alignItems: "center",
-              padding: 10,
-              borderRadius: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            <View>
-              <View>
-                <Text
-                  key={al.time}
-                  style={{
-                    color: "#32aef5",
-                    fontSize: 12,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {al.date}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 32,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {al.time}
-                </Text>
-              </View>
-            </View>
-            <View>
-              <Switch
-                trackColor={{ false: "black", true: "#d2e3fc" }}
-                thumbColor={isEnabled ? "#1973e8" : "#5f6368"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-              />
-              {/* <Icon name="more-vert" color={'white'} /> */}
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    borderRadius: 1000,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 40,
-                    height: 40,
-                  },
-                  { backgroundColor: pressed ? "green" : "black" },
-                ]}
-                onPress={() => {
-                  setAlarm((previous: TypeAlarm[]) => {
-                    return previous.filter((item) => item !== al);
-                  });
-                }}
-              >
-                <Text style={{ color: "white", fontWeight: "bold" }}>
-                  X
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        )
-      })}
-  </View>
-)
-
+export default function HomeScreen() {
+  return (
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerImage={
+        <Image
+          source={require('@/assets/images/partial-react-logo.png')}
+          style={styles.reactLogo}
+        />
+      }>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">Welcome back!</ThemedText>
+        <HelloWave />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText>
+          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
+          Press{' '}
+          <ThemedText type="defaultSemiBold">
+            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
+          </ThemedText>{' '}
+          to open developer tools.
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
+        <ThemedText>
+          Tap the Explore tab to learn more about what's included in this starter app.
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText>
+          When you're ready, run{' '}
+          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
+          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+        </ThemedText>
+      </ThemedView>
+    </ParallaxScrollView>
+  );
 }
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stepContainer: {
+    gap: 8,
+    marginBottom: 8,
+  },
+  reactLogo: {
+    height: 178,
+    width: 290,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+  },
+});

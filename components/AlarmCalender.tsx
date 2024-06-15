@@ -12,6 +12,7 @@ export default function AlarmCalender({
   return (
     <SafeAreaView>
       <Calendar
+      style={{width: 350}}
         theme={{
           backgroundColor: "#1e1e1e",
           calendarBackground: "#1e1e1e",
