@@ -14,14 +14,13 @@ export default function AlarmCalender({
       <Calendar
       style={{width: 350}}
         theme={{
-          backgroundColor: "#1e1e1e",
-          calendarBackground: "#1e1e1e",
-          textSectionTitleColor: "#b6c1cd",
-          selectedDayBackgroundColor: "white",
-          selectedDayTextColor: "black",
-          todayTextColor: "#00adf5",
-          dayTextColor: "white",
-          textDisabledColor: "#d9e",
+          calendarBackground: '#1e1e1e',
+          textSectionTitleColor: 'white',
+          selectedDayBackgroundColor: '#555555',
+          selectedDayTextColor: 'white',
+          todayTextColor: '#787af1',
+          dayTextColor: 'white',
+          textDisabledColor: '#555555',
         }}
         onDayPress={(day) => {
           setShowTime(true);

@@ -48,7 +48,7 @@ export default function CalenderView({alarms}: TypeCalenderViewProps) {
   };
   
 
-  const renderDay = (day) => {
+  const renderDay = (day: Date) => {
     if (day) {
       return <Text style={styles.customDay}>{day.getDay()}</Text>;
     }

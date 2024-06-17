@@ -56,7 +56,7 @@ return (
                 <Text
                   key={al.time}
                   style={{
-                    color: "#32aef5",
+                    color: "#787af1",
                     fontSize: 12,
                     fontWeight: "bold",
                   }}
